@@ -15,10 +15,10 @@ function getCurrentWeekDays() {
   monday.setDate(today.getDate() - ((dayOfWeek + 6) % 7))
   const daysArr = []
   const dayKeys = ['mon', 'tue', 'wed', 'thu', 'fri']
-  const dayLabels = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday']
+  const dayLabels = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes']
   const monthNames = [
-    'January', 'February', 'March', 'April', 'May', 'June',
-    'July', 'August', 'September', 'October', 'November', 'December'
+    'enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio',
+    'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre'
   ]
   for (let i = 0; i < 5; i++) {
     const d = new Date(monday)
@@ -43,9 +43,10 @@ function getDefaultActiveDay(): Day {
 }
 
 function Badge({ item }: { item: ClassItem }) {
-  if (item.full) return <span className="badge badge--muted">Full</span>
+  if (item.full) return <span className="badge badge--muted">Completa</span>
   if (typeof item.spotsLeft === 'number') {
-    const label = `${item.spotsLeft} spot${item.spotsLeft === 1 ? '' : 's'} left`
+    const n = item.spotsLeft
+    const label = n === 1 ? `Queda ${n} lugar` : `Quedan ${n} lugares`
     return <span className="badge">{label}</span>
   }
   return null
@@ -54,7 +55,7 @@ function Badge({ item }: { item: ClassItem }) {
 function ClassCard({ item }: { item: ClassItem }) {
   const navigate = useNavigate()
   const time = `${item.start} - ${item.end}`
-  const actionLabel = item.full ? 'Join Waitlist' : 'Reserve'
+  const actionLabel = item.full ? 'Unirse a la lista de espera' : 'Reservar'
   return (
     <article
       className={`card ${item.reserved ? 'card--reserved' : ''}`}
@@ -120,7 +121,7 @@ export default function LandingPage() {
         const { from, to } = getDateRangeForKey(activeDay.key)
         const clientId = getClientId() ?? undefined
         const apiUrl = import.meta.env.VITE_API_URL
-        if (!apiUrl) throw new Error('API URL not set in .env (VITE_API_URL)')
+        if (!apiUrl) throw new Error('URL de API no configurada en .env (VITE_API_URL)')
 
         const params: Record<string, string> = { from, to }
         if (clientId) params.clientId = clientId
@@ -128,7 +129,7 @@ export default function LandingPage() {
         const res = await axios.get(`${apiUrl}/v1/classes`, { params })
         const data = res.data
         if (!data?.success) {
-          throw new Error(data?.error || 'Unknown error')
+          throw new Error(data?.error || 'Error desconocido')
         }
         const items: ClassItem[] = (data.classes || []).map((c: any) => {
           const capacity = Number(c.capacity ?? 0)
@@ -139,7 +140,7 @@ export default function LandingPage() {
             title: c.title,
             start: formatTime(c.start_at),
             end: formatTime(c.end_at),
-            instructor: c?.instructor?.name ?? 'Coach',
+            instructor: c?.instructor?.name ?? 'Entrenador',
             spotsLeft: Number.isFinite(spotsLeft) ? spotsLeft : undefined,
             full: capacity > 0 ? reserved >= capacity : false,
             reserved: c.user_status === 'reserved',
@@ -148,7 +149,7 @@ export default function LandingPage() {
         })
         setClasses(items)
       } catch (e: any) {
-        setError(e?.message || 'Failed to load classes')
+        setError(e?.message || 'No se pudieron cargar las clases')
         setClasses([])
       } finally {
         setLoading(false)
@@ -161,8 +162,8 @@ export default function LandingPage() {
     <div className="page">
       <header className="header">
         <h1 className="greeting">Iron Fit</h1>
-        <p className="subtitle">Ready for your workout today?</p>
-        <div className="week" role="tablist" aria-label="Pick a day">
+        <p className="subtitle">¿Listo para entrenar hoy?</p>
+        <div className="week" role="tablist" aria-label="Elige un día">
           {days.map((d) => (
             <button
               key={d.key}
@@ -181,7 +182,7 @@ export default function LandingPage() {
 
       <main className="content" aria-live="polite">
         <h2 className="day-heading">{activeDay.dateLabel}</h2>
-        {loading && <p>Loading classes…</p>}
+        {loading && <p>Cargando clases…</p>}
         {error && !loading && <p role="alert">{error}</p>}
         {!loading && !error && (
           <section className="list">
@@ -189,7 +190,7 @@ export default function LandingPage() {
               <ClassCard key={c.id} item={c} />
             ))}
             {classes.length === 0 && (
-              <p>No classes scheduled for this day.</p>
+              <p>No hay clases programadas para este día.</p>
             )}
           </section>
         )}

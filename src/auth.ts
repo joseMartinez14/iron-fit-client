@@ -29,7 +29,7 @@ export async function loginWithPassword(
 ): Promise<{ client_id: string }> {
   // Read API URL from environment variable
   const apiUrl = import.meta.env.VITE_API_URL;
-  if (!apiUrl) throw new Error("API URL not set in .env (VITE_API_URL)");
+  if (!apiUrl) throw new Error("URL de API no configurada en .env (VITE_API_URL)");
   try {
     const response = await axios.post(`${apiUrl}/v1/auth`, {
       username,
@@ -38,6 +38,6 @@ export async function loginWithPassword(
     // Expecting backend to return { client_id }
     return response.data;
   } catch (error: any) {
-    throw new Error(error?.response?.data?.message || "Login failed");
+    throw new Error(error?.response?.data?.message || "Inicio de sesión fallido");
   }
 }

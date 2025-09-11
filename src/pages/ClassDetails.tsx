@@ -25,13 +25,13 @@ export default function ClassDetails() {
       setError(null)
       try {
         const apiUrl = import.meta.env.VITE_API_URL
-        if (!apiUrl) throw new Error('API URL not set in .env (VITE_API_URL)')
+        if (!apiUrl) throw new Error('URL de API no configurada en .env (VITE_API_URL)')
         const clientId = getClientId() ?? undefined
         const res = await axios.get(`${apiUrl}/v1/classes/${id}`, {
           params: clientId ? { clientId } : undefined,
         })
         const data = res.data
-        if (!data?.success) throw new Error(data?.error || 'Failed to load class')
+        if (!data?.success) throw new Error(data?.error || 'No se pudo cargar la clase')
         const c = data.class
         const capacity = Number(c.capacity ?? 0)
         const reserved = Number(c.reserved_count ?? 0)
@@ -41,7 +41,7 @@ export default function ClassDetails() {
           title: c.title,
           start: formatTime(c.start_at),
           end: formatTime(c.end_at),
-          instructor: c?.instructor?.name ?? 'Coach',
+          instructor: c?.instructor?.name ?? 'Entrenador',
           spotsLeft: Number.isFinite(spotsLeft) ? spotsLeft : undefined,
           full: capacity > 0 ? reserved >= capacity : false,
           reserved: c.user_status === 'reserved',
@@ -54,7 +54,7 @@ export default function ClassDetails() {
         }))
         setPeople(participants)
       } catch (e: any) {
-        setError(e?.message || 'Failed to load class details')
+        setError(e?.message || 'No se pudieron cargar los detalles de la clase')
         setCls(null)
         setPeople([])
       } finally {
@@ -67,8 +67,8 @@ export default function ClassDetails() {
   if (loading) {
     return (
       <div className="detail">
-        <button className="back" onClick={() => navigate(-1)}>← Back</button>
-        <p>Loading…</p>
+        <button className="back" onClick={() => navigate(-1)}>← Volver</button>
+        <p>Cargando…</p>
       </div>
     )
   }
@@ -76,7 +76,7 @@ export default function ClassDetails() {
   if (error) {
     return (
       <div className="detail">
-        <button className="back" onClick={() => navigate(-1)}>← Back</button>
+        <button className="back" onClick={() => navigate(-1)}>← Volver</button>
         <p role="alert">{error}</p>
       </div>
     )
@@ -85,8 +85,8 @@ export default function ClassDetails() {
   if (!cls) {
     return (
       <div className="detail">
-        <button className="back" onClick={() => navigate(-1)}>← Back</button>
-        <p>Class not found.</p>
+        <button className="back" onClick={() => navigate(-1)}>← Volver</button>
+        <p>Clase no encontrada.</p>
       </div>
     )
   }
@@ -96,7 +96,7 @@ export default function ClassDetails() {
   return (
     <div className="detail">
       <header className="detail__header">
-        <button className="back" onClick={() => navigate(-1)}>← Back</button>
+        <button className="back" onClick={() => navigate(-1)}>← Volver</button>
         <h1 className="detail__title">{cls.title}</h1>
         <p className="detail__meta">{time} • {cls.instructor}</p>
       </header>
@@ -105,7 +105,7 @@ export default function ClassDetails() {
 
       <section className="participants">
         <div className="participants__header">
-          <h2>Participants</h2>
+          <h2>Participantes</h2>
           <span className="count">{people.length}</span>
         </div>
         <ul className="people">
@@ -122,7 +122,7 @@ export default function ClassDetails() {
 
       <footer className="detail__actions">
         <button className={`btn ${cls.full ? 'btn--muted' : 'btn--primary'}`} disabled={!!cls.full}>
-          {cls.full ? 'Join Waitlist' : cls.reserved ? 'Cancel Reservation' : 'Reserve Spot'}
+          {cls.full ? 'Unirse a la lista de espera' : cls.reserved ? 'Cancelar reserva' : 'Reservar lugar'}
         </button>
       </footer>
     </div>

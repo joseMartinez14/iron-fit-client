@@ -21,7 +21,7 @@ export default function LoginPage() {
     e.preventDefault()
     setError(null)
     if (!username || !password) {
-      setError('Please enter username and password')
+      setError('Por favor, ingresa usuario y contraseña')
       return
     }
     setLoading(true)
@@ -30,19 +30,19 @@ export default function LoginPage() {
       setClientId(client_id)
       navigate('/landing', { replace: true })
     } catch (err) {
-      setError('Login failed')
-    } finally {
-      setLoading(false)
-    }
+      setError('Inicio de sesión fallido')
+      } finally {
+        setLoading(false)
+      }
   }
 
   return (
     <div className="login">
       <h1 className="login__title">Iron Fit</h1>
-      <p className="login__subtitle">Sign in to continue</p>
+      <p className="login__subtitle">Inicia sesión para continuar</p>
       <form className="login__form" onSubmit={onSubmit}>
         <label className="field">
-          <span>Username</span>
+          <span>Usuario</span>
           <input
             type="text"
             value={username}
@@ -52,7 +52,7 @@ export default function LoginPage() {
           />
         </label>
         <label className="field">
-          <span>Password</span>
+          <span>Contraseña</span>
           <input
             type="password"
             value={password}
@@ -63,7 +63,7 @@ export default function LoginPage() {
         </label>
         {error && <div className="error" role="alert">{error}</div>}
         <button className="btn btn--primary" type="submit" disabled={loading}>
-          {loading ? 'Signing in…' : 'Sign In'}
+          {loading ? 'Iniciando sesión…' : 'Iniciar sesión'}
         </button>
       </form>
     </div>
